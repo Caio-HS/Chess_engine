@@ -275,6 +275,30 @@ static int do_move_match(const GAME *restrict game, const MOVE *restrict move, b
 	return errorCode;
 }
 
+//proxima a implementar
+static int is_move_possible(const GAME *restrict game, const MOVE *restrict move, bool *restrict out)
+{
+	assert(game != NULL);
+	assert(move != NULL);
+	assert(out != NULL);
+	int errorCode = 0;
+	*out = true;
+	
+	return errorCode;
+}
+
+//para implementar
+static int is_king_in_xeque(const GAME *restrict game, const MOVE *restrict move, bool *restrict out)
+{
+	assert(game != NULL);
+	assert(move != NULL);
+	assert(out != NULL);
+	int errorCode = 0;
+	*out = true;
+	
+	return errorCode;
+}
+
 int is_move_legal(const GAME *restrict game, const MOVE *restrict move, bool *restrict out)
 {
 	assert(game != NULL);
@@ -292,7 +316,11 @@ int is_move_legal(const GAME *restrict game, const MOVE *restrict move, bool *re
 	errorCode = do_move_match(game, move, out);
 	if(errorCode || !(*out)) {return errorCode;}
 	
+	errorCode = is_move_possible(game, move, out);
+	if(errorCode || !(*out)) {return errorCode;}
 	
+	errorCode = is_king_in_xeque(game, move, out);
+	if(errorCode || !(*out)) {return errorCode;}
 	
 	return errorCode;
 }
