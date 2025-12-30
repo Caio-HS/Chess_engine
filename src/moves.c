@@ -8,10 +8,10 @@ static int valid_coordinates(const MOVE *restrict move, bool *restrict out)
 	assert(out != NULL);
 	*out = true;
 	
-	if(*move.from_x < 0 || *move.from_x > 7) {*out = false;}
-	if(*move.from_y < 0 || *move.from_y > 7) {*out = false;}
-	if(*move.to_x < 0 || *move.to_x > 7) {*out = false;}
-	if(*move.to_y < 0 || *move.to_y > 7) {*out = false;}
+	if((*move).from_x < 0 || (*move).from_x > 7) {*out = false;}
+	if((*move).from_y < 0 || (*move).from_y > 7) {*out = false;}
+	if((*move).to_x < 0 || (*move).to_x > 7) {*out = false;}
+	if((*move).to_y < 0 || (*move).to_y > 7) {*out = false;}
 	
 	return 0;
 }
@@ -24,8 +24,8 @@ static int is_players_piece(const GAME *restrict game, const MOVE *restrict move
 	int errorCode = 0;
 	*out = true;
 	
-	PIECE moving_piece = *game.board[*move.from_y][*move.from_x];
-	COLOR playing_color = *game.side_to_move;
+	PIECE moving_piece = (*game).board[(*move).from_y][(*move).from_x];
+	COLOR playing_color = (*game).side_to_move;
 	
 	if(moving_piece.color != playing_color) {*out = false;}
 	
@@ -46,10 +46,10 @@ static int is_king_move(const MOVE *restrict move, const COLOR *restrict color, 
 	int errorCode = 0;
 	
 	DELTA delta;
-	delta.dx = *move.to_x - *move.from_x;
-	delta.dy = *move.to_y - *move.from_y;
+	delta.dx = (*move).to_x - (*move).from_x;
+	delta.dy = (*move).to_y - (*move).from_y;
 	
-	errorCode = is_king_base_move(delta, color, &base);
+	errorCode = is_king_base_move(&delta, color, &base);
 	if(errorCode) {*out = false; return errorCode;}
 	
 	errorCode = is_roque_move(move, color, roque_kingside, roque_queenside, &roque);
@@ -72,10 +72,10 @@ static int is_pawn_move(const MOVE *restrict move, const COLOR *restrict color, 
 	int errorCode = 0;
 	
 	DELTA delta;
-	delta.dx = *move.to_x - *move.from_x;
-	delta.dy = *move.to_y - *move.from_y;
+	delta.dx = (*move).to_x - (*move).from_x;
+	delta.dy = (*move).to_y - (*move).from_y;
 	
-	errorCode = is_king_base_move(delta, color, &base);
+	errorCode = is_king_base_move(&delta, color, &base);
 	if(errorCode) {*out = false; return errorCode;}
 	
 	errorCode = is_roque_move(move, color, &special);
@@ -209,8 +209,8 @@ static int is_queen_move(const DELTA *restrict delta, bool *restrict out);
 	bool rook_move = false;
 	bool bishop_move = false;
 	
-	is_rook_move(delta, &rook_move);
-	is_bishop_move(delta, &bishop_move);
+	is_rook_move(&delta, &rook_move);
+	is_bishop_move(&delta, &bishop_move);
 	
 	if(!(rook_move || bishop_move)) {*out = false;}
 	
@@ -226,22 +226,22 @@ static int do_move_match(const GAME *restrict game, const MOVE *restrict move, b
 	*out = true;
 	
 	DELTA delta;
-	delta.dx = *move.to_x - *move.from_x;
-	delta.dy = *move.to_y - *move.from_y;
+	delta.dx = (*move).to_x - (*move).from_x;
+	delta.dy = (*move).to_y - (*move).from_y;
 	
-	PIECE moving_piece = *game.board[*move.from_y][*move.from_x];
+	PIECE moving_piece = (*game).board[(*move).from_y][(*move).from_x];
 	
 	bool roque_kingside = false;
 	bool roque_queenside = false;
 	
 	if(moving_piece == WHITE)
 	{
-		roque_kingside = *game.white_can_castle_kingside;
-		roque_queenside = *game.white_can_castle_queenside;
+		roque_kingside = (*game).white_can_castle_kingside;
+		roque_queenside = (*game).white_can_castle_queenside;
 	} else
 	{
-		roque_kingside = *game.black_can_castle_kingside;
-		roque_queenside = *game.black_can_castle_queenside;
+		roque_kingside = (*game).black_can_castle_kingside;
+		roque_queenside = (*game).black_can_castle_queenside;
 	}
 	
 	switch(moving_piece.type)
@@ -250,16 +250,16 @@ static int do_move_match(const GAME *restrict game, const MOVE *restrict move, b
 			errorCode = is_pawn_move(move, moving_piece.color, out);
 			break;
 		case(KNIGHT):
-			errorCode = is_knight_move(delta, out);
+			errorCode = is_knight_move(&delta, out);
 			break;
 		case(BISHOP):
-			errorCode = is_bishop_move(delta, out);
+			errorCode = is_bishop_move(&delta, out);
 			break;
 		case(ROOK):
-			errorCode = is_rook_move(delta, out);
+			errorCode = is_rook_move(&delta, out);
 			break;
 		case(QUEEN):
-			errorCode = is_queen_move(delta, out);
+			errorCode = is_queen_move(&delta, out);
 			break;
 		case(KING):
 			errorCode = is_king_move(move, moving_piece.color, roque_kingside, roque_queenside, out);
