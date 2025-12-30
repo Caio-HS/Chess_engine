@@ -66,6 +66,24 @@ static int is_pawn_move(const MOVE *restrict move, const COLOR *restrict color, 
 	assert(color != NULL);
 	assert(out != NULL);
 	
+	*out = false;
+	bool special = false;
+	bool base = false;
+	int errorCode = 0;
+	
+	DELTA delta;
+	delta.dx = *move.to_x - *move.from_x;
+	delta.dy = *move.to_y - *move.from_y;
+	
+	errorCode = is_king_base_move(delta, color, &base);
+	if(errorCode) {*out = false; return errorCode;}
+	
+	errorCode = is_roque_move(move, color, &special);
+	if(errorCode) {*out = false; return errorCode;}
+	
+	*out = base || special;
+	
+	return errorCode;
 }
 
 static is_pawn_special(const MOVE *restrict move, const COLOR *restrict color, bool *restrict out)
@@ -74,7 +92,15 @@ static is_pawn_special(const MOVE *restrict move, const COLOR *restrict color, b
 	assert(color != NULL);
 	assert(out != NULL);
 	
+	*out = true;
 	
+	if((*move).from_x != (*move).to_x) {*out = false;}
+	if(color == WHITE && (*move).from_y != 1) {*out = false;}
+	if(color == BLACK && (*move).from_y != 6) {*out = false;}
+	if(color == WHITE && (*move).to_y != 3) {*out = false;}
+	if(color == BLACK && (*move).to_y != 4) {*out = false;}
+	
+	return 0;
 }
 
 static int is_roque_move(const MOVE *restrict move, const COLOR *restrict color, const bool *restrict roque_kingside, const bool *restrict roque_queenside, bool *restrict out)
@@ -85,6 +111,12 @@ static int is_roque_move(const MOVE *restrict move, const COLOR *restrict color,
 	assert(roque_queenside != NULL);
 	assert(out != NULL);
 
+	*out = false;
+	
+	if((*move).to_x == 2 && roque_queenside) {*out == true;}
+	if((*move).to_x == 6 && roque_kingside) {*out == true;}
+	
+	return 0;
 }
 
 static int is_king_base_move(const DELTA *restrict delta, const COLOR *restrict color, bool *restrict out);
